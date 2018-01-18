@@ -68,7 +68,11 @@ class Hiera
             })
           resp.parameters.each do |parameter|
             Hiera.debug("Found paramenter: #{parameter}")
-            Aws_parameter_store_backend.add_parameter_to_hash(parameter.name[prefix.length..-1], "test_value", parameters)
+            presp = client.get_parameter({
+              name: parameter.name,
+              with_decryption: true,
+            })
+            Aws_parameter_store_backend.add_parameter_to_hash(parameter.name[prefix.length..-1], presp.parameter.value, parameters)
           end
           next_token = resp.next_token
           break unless next_token
